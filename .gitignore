@@ -1,0 +1,14 @@
+node_modules/
+build/
+.zapierapprc
+.env
+*.log
+.DS_Store
+dist/
+.env.*
+!.env.example
+.npmrc
+.zapierrc
+__pycache__/
+*.pyc
+*.tgz

@@ -1,0 +1,46 @@
+{
+  "name": "zapier-scraperapi",
+  "version": "1.0.2",
+  "description": "Use Geonode’s private Zapier web scraping app to extract pages, process URL lists and crawl websites, then pass results to your next Zap step.",
+  "private": true,
+  "license": "MIT",
+  "homepage": "https://geonode.com/integrations",
+  "author": {
+    "name": "Geonode",
+    "email": "support@geonode.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geonodecom/integration-zapier.git"
+  },
+  "keywords": [
+    "zapier",
+    "zapier-platform-app",
+    "scraper",
+    "scraping",
+    "crawl",
+    "extract",
+    "geonode"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=18",
+    "npm": ">=5.6.0"
+  },
+  "scripts": {
+    "test": "node --test",
+    "validate": "zapier-platform validate",
+    "build": "zapier-platform build",
+    "push": "zapier-platform push"
+  },
+  "dependencies": {
+    "zapier-platform-core": "19.0.0"
+  },
+  "devDependencies": {
+    "nock": "^13.5.4",
+    "zapier-platform-cli": "^19.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/geonodecom/integration-zapier/issues"
+  }
+}
