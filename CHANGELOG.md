@@ -6,6 +6,8 @@ The format is inspired by Keep a Changelog.
 
 ## [Unreleased]
 
+- Removed the internal repository preparation notes and links to the old monorepo.
+
 - README links to the Scraper API product page, and `package.json` names this repository.
 
 ## [1.0.2] - 2026-10-19

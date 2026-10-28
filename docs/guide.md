@@ -1,5 +1,3 @@
-> This guide is adapted from the [original source guide](https://github.com/geonodecom/scraper-api-sdks/blob/b9ebe5d53bd1b74a9de3f17d33e62e4f9054eea0/zapier-scraperapi/README.md). Paths below are relative to this standalone repository. Publishing remains in the original monorepo; see [release migration](release-migration.md).
-
 # Scraper API: Zapier Integration
 
 [Integrations page](https://geonode.com/integrations) · [Geonode API docs](https://docs.geonode.com/docs/scraper-api) · [GitHub source](https://github.com/geonodecom/integration-zapier) · [Repository overview](../README.md)
@@ -95,7 +93,7 @@ To exercise the live app locally, copy `.env.example` to `.env`, fill in
 
 ## Packaging reference (maintainers only)
 
-The existing Geonode app is **243288**. Do not register a duplicate app or push a release during source preparation. Existing publishing remains in the original monorepo; these inherited commands are reference material for an approved migration.
+The existing Geonode app is **243288**. Do not register a duplicate app. Releases go through the `Publish` workflow; these commands are reference material.
 
 ## Packaging for private / invite-only use
 
@@ -134,14 +132,12 @@ Invited users see the app in their Zap editor immediately. Promote a version
 with `zapier-platform promote <version>` when you want new invitees to land on it
 by default. Public listing (app submission) is **not** performed here by design.
 
-## Existing automated publishing (original monorepo)
+## Automated publishing
 
-This standalone repository does not have publishing automation. The description below applies only to the original monorepo.
-
-[The existing monorepo workflow](https://github.com/geonodecom/scraper-api-sdks/blob/main/.github/workflows/zapier-publish.yml)
+[The `Publish` workflow](../.github/workflows/publish.yml)
 pushes a new version to Zapier automatically. It runs `npm ci` → `npm test` →
 `zapier-platform validate` → `zapier-platform push`, and only publishes when
-`zapier-scraperapi/package.json`'s **version changes** on `main` (or on a manual
+`package.json`'s **version changes** on `main` (or on a manual
 `workflow_dispatch`, which can also `zapier-platform promote`). Re-pushing an
 existing version is impossible, so the version-change gate keeps merges idempotent.
 

@@ -73,9 +73,9 @@ Tests mock API requests with nock. Validation and packaging are local checks, no
 
 ## Source and releases
 
-This repository preserves the app's extracted history. The app ID, version and action/search/trigger identifiers remain unchanged. Publishing stays in the original monorepo until an approved handover. Do not register a replacement app, push a release, or migrate existing users during repository preparation.
+The app ID and the action, search and trigger identifiers are kept stable. Bumping `version` in `package.json` on `main` pushes that version to Zapier through the `Publish` workflow.
 
-[Release migration](docs/release-migration.md) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [Source provenance](docs/provenance.md) · [Contact Geonode](https://geonode.com/contact)
+[Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [Contact Geonode](https://geonode.com/contact)
 
 MIT licensed. See [LICENSE](LICENSE).
 
