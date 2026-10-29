@@ -1,6 +1,6 @@
 # Scraper API: Zapier Integration
 
-[Integrations page](https://geonode.com/integrations) · [Geonode API docs](https://docs.geonode.com/docs/scraper-api) · [GitHub source](https://github.com/geonodecom/integration-zapier) · [Repository overview](../README.md)
+[Integrations page](https://geonode.com/integrations/integration-zapier) · [Geonode API docs](https://docs.geonode.com/docs/scraper-api) · [GitHub source](https://github.com/geonodecom/integration-zapier) · [Repository overview](../README.md)
 
 A native [Zapier Platform CLI](https://docs.zapier.com/platform/reference/cli-docs)
 app (Node.js) that exposes the [Geonode Scraper API](https://geonode.com/products/scraper-api)

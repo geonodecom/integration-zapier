@@ -6,6 +6,8 @@ The format is inspired by Keep a Changelog.
 
 ## [Unreleased]
 
+- The integrations page link and package homepage point to this integration's own page.
+
 - Removed the internal repository preparation notes and links to the old monorepo.
 
 - README links to the Scraper API product page, and `package.json` names this repository.
