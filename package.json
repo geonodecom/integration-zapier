@@ -4,7 +4,7 @@
   "description": "Use Geonode’s private Zapier web scraping app to extract pages, process URL lists and crawl websites, then pass results to your next Zap step.",
   "private": true,
   "license": "MIT",
-  "homepage": "https://geonode.com/integrations",
+  "homepage": "https://geonode.com/integrations/integration-zapier",
   "author": {
     "name": "Geonode",
     "email": "support@geonode.com"

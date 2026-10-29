@@ -6,7 +6,7 @@ Bring web content into Zapier with Geonode’s app. Extract pages, discover URLs
 
 **[Try Geonode for free](https://app.geonode.com/sign-up)**
 
-[Integrations page](https://geonode.com/integrations) · [Geonode API docs](https://docs.geonode.com/docs/scraper-api) · [View source on GitHub](https://github.com/geonodecom/integration-zapier) · [Complete guide](docs/guide.md)
+[Integrations page](https://geonode.com/integrations/integration-zapier) · [Geonode API docs](https://docs.geonode.com/docs/scraper-api) · [View source on GitHub](https://github.com/geonodecom/integration-zapier) · [Complete guide](docs/guide.md)
 
 **Private app, access by request.** This is the source for Geonode's existing invite-only Zapier app, ID `243288`. It is not publicly listed in the Zapier marketplace. The internal `zapier-scraperapi` package remains private and is not published to npm.
 
