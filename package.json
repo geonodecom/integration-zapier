@@ -1,6 +1,6 @@
 {
   "name": "zapier-scraperapi",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Use Geonode’s private Zapier web scraping app to extract pages, process URL lists and crawl websites, then pass results to your next Zap step.",
   "private": true,
   "license": "MIT",
