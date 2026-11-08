@@ -17,9 +17,9 @@ in the Geonode integration collection.
 
 | Action | Endpoint | What it does |
 | --- | --- | --- |
-| **Extract URL** | `POST /v1/extract` | Scrape a single URL → Markdown/HTML. Sync by default; async mode with optional wait-for-completion. |
-| **Batch Scrape URLs** | `POST /v1/batch` | Submit many URLs in one job. Optional wait-for-completion polling. |
-| **Crawl Site** | `POST /v1/crawl` | Crawl from a seed URL (depth / page limit). Optional wait-for-completion polling. |
+| **Extract URL** | `POST /v1/extract` | Get one page as Markdown/HTML. Sync by default (up to 20 s); async mode with optional waiting (up to 25 s). |
+| **Extract URLs in Batch** | `POST /v1/batch` | Submit many URLs in one job. Optional waiting (up to 25 s). |
+| **Crawl Site** | `POST /v1/crawl` | Crawl from a seed URL (depth / page limit). Optional waiting (up to 25 s). |
 | **Map URLs** | `POST /v1/map` | Discover all URLs under a base URL via sitemaps + light crawling. |
 
 ### Search
@@ -34,6 +34,12 @@ in the Geonode integration collection.
 | --- | --- | --- |
 | **Job Completed** | REST Hook (`/v1/webhooks`) | Fires the moment an async **extract / batch / crawl** job finishes. Auto-registers a webhook on Zap turn-on and removes it on turn-off. Backfills recent completed jobs for testing. |
 
+Each trigger result has `id` (the job ID), `event_type`, `job_id`, `status` and
+`status_url`. Extract events add the job's result (`data`, `metadata`,
+`tokens_charged`, `error`); batch and crawl events add `counts`. Live deliveries
+also carry `delivery_id`, `webhook_id` and `delivered_at`. Test data from recent
+jobs has the same shape, as Zapier requires.
+
 Every operation ships **sample data** and **output field** definitions so
 downstream Zap steps can map fields before any live run — meeting Zapier
 platform standards.
@@ -42,7 +48,8 @@ platform standards.
 
 Custom auth with two fields:
 
-- **Base URL** — root of your Scraper API deployment (no trailing slash).
+- **Base URL** — keep `https://scraper.geonode.io`. The app sends the key only
+  to https addresses on geonode.io and refuses any other host.
 - **API Key** — sent as the `X-Api-Key` header on every request.
 
 The connection test calls `GET /v1/statistics` (an authenticated endpoint) so a
@@ -57,8 +64,8 @@ even with a bad key, so it is deliberately not used.
   authentication.js        Custom API-key + base-URL auth, connection test/label
   middleware.js            beforeRequest (X-Api-Key) + afterResponse (error mapping)
   lib/
-    client.js              request() with retry/backoff, pruneEmpty, pollUntilComplete
-    fields.js              shared input fields (formats, proxy, wait_config, polling)
+    client.js              request() with retry/backoff, pruneEmpty, pollUntilComplete, time budget
+    fields.js              shared input fields (formats, proxy, wait_config, wait for completion)
     samples.js             sample payloads + output fields per operation
   creates/
     extract_url.js
@@ -72,6 +79,7 @@ even with a bad key, so it is deliberately not used.
   test/
     helpers.test.js        pure-function unit tests
     app.test.js            end-to-end tests with nock-mocked HTTP
+    review.test.js         behaviour Zapier's review checks (shapes, time limit, wording)
 ```
 
 ## Local development
@@ -156,14 +164,17 @@ run `zapier-platform promote <version>` locally. Move existing users with
 
 ## Notes & behaviour
 
-- **Retries:** `429` and `5xx` responses are retried up to 5 times with
-  exponential backoff, honoring `Retry-After` when present.
-- **Wait-for-completion:** crawl/batch (and async extract) can optionally poll
-  the job status until it reaches a terminal state (`completed` / `failed` /
-  `cancelled`) within a configurable timeout.
+- **Time limit:** Zapier stops a step after 30 seconds, so each step plans to
+  finish in 25. A sync extraction sends `timeout: 20000`; the API stops the page
+  then and does not bill it.
+- **Retries:** `5xx` responses are retried with exponential backoff, honoring
+  `Retry-After`, while the retry still fits in the step's time. A `429` reaches
+  Zapier as a `ThrottledError`, and Zapier runs the step again later.
+- **Wait for Completion:** crawl/batch (and async extract) check the job every
+  3 seconds for up to 25 seconds. A job still running then is returned with its
+  current status and ID instead of an error.
 - **Proxy & wait config:** surfaced as flat fields and reassembled into the
   nested `proxy` / `wait_config` request objects the API expects.
 - **Webhook signing secret:** the secret returned at registration is stored in
-  the Zap's `subscribeData`. Zapier's REST-hook URLs are unguessable; add
-  HMAC verification in `triggers/job_completed.js#perform` if your deployment
-  signs deliveries and you want strict verification.
+  the Zap's `subscribeData`. The API signs each delivery (`X-Webhook-Signature`),
+  but the trigger does not check it yet; Zapier's REST-hook URLs are unguessable.

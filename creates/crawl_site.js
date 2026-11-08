@@ -1,18 +1,19 @@
 'use strict';
 
-const { request, pruneEmpty, pollUntilComplete } = require('../lib/client');
+const { request, pruneEmpty, pollUntilComplete, deadlineFromNow } = require('../lib/client');
 const {
   outputFormatField,
   renderJsField,
   proxyFields,
   waitFields,
-  pollFields,
+  waitForCompletionField,
   buildProxy,
   buildWaitConfig,
 } = require('../lib/fields');
 const samples = require('../lib/samples');
 
 const perform = async (z, bundle) => {
+  const deadline = deadlineFromNow();
   const input = bundle.inputData;
 
   const body = pruneEmpty({
@@ -27,17 +28,14 @@ const perform = async (z, bundle) => {
     wait_config: buildWaitConfig(input),
   });
 
-  const response = await request(z, bundle, { method: 'POST', path: '/v1/crawl', body });
+  const response = await request(z, bundle, { method: 'POST', path: '/v1/crawl', body, deadline });
 
-  // Crawl is always async. Optionally poll until the crawl reaches a terminal state.
+  // Crawl is always async. Optionally wait a while for it to finish.
   if (!input.wait_for_completion) return response;
 
   const statusUrl = response.status_url || `/v1/crawl/${response.job_id}`;
-  return pollUntilComplete(z, bundle, {
-    path: statusUrl,
-    intervalMs: input.poll_interval_ms || 5000,
-    timeoutMs: input.poll_timeout_ms || 600000,
-  });
+  const job = await pollUntilComplete(z, bundle, { path: statusUrl, deadline });
+  return { ...response, ...job };
 };
 
 module.exports = {
@@ -46,7 +44,7 @@ module.exports = {
   display: {
     label: 'Crawl Site',
     description:
-      'Crawl a site starting from a seed URL, following links up to a depth/page limit. Returns a job handle; optionally wait for the crawl to finish.',
+      'Crawls a site from a start URL, following links up to a depth and page limit. Returns the job ID, and can wait up to 25 seconds for the crawl to finish.',
   },
   operation: {
     inputFields: [
@@ -94,7 +92,7 @@ module.exports = {
       },
       ...proxyFields,
       ...waitFields,
-      ...pollFields(false),
+      waitForCompletionField(false),
     ],
     perform,
     sample: samples.crawlAccepted,
