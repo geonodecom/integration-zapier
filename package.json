@@ -34,11 +34,11 @@
     "push": "zapier-platform push"
   },
   "dependencies": {
-    "zapier-platform-core": "19.0.0"
+    "zapier-platform-core": "19.3.0"
   },
   "devDependencies": {
     "nock": "^13.5.4",
-    "zapier-platform-cli": "^19.0.0"
+    "zapier-platform-cli": "^19.3.0"
   },
   "bugs": {
     "url": "https://github.com/geonodecom/integration-zapier/issues"

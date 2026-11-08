@@ -42,13 +42,13 @@ For longer batches or crawls, retain the job ID and use **Find Job by ID** or th
 | Operation | What it does |
 | --- | --- |
 | Extract URL | Extract one page; supports sync or async processing and optional waiting. |
-| Batch Scrape URLs | Process many URLs as a background job. |
+| Extract URLs in Batch | Process many URLs as a background job. |
 | Crawl Site | Follow links from a seed URL within your depth and page limits. |
 | Map URLs | Discover URLs under a site. |
 | Find Job by ID | Retrieve an extraction, batch, crawl or map job's status/result. |
 | Job Completed | Receive a REST-hook event when extraction, batch or crawl work completes. |
 
-Sample data and output-field definitions help you map downstream steps before a live run. For long operations, prefer a background job and completion trigger to keeping an action open. Read the [full guide](docs/guide.md) for polling, retries, error mapping and webhook behavior.
+Sample data and output-field definitions help you map downstream steps before a live run. Zapier stops a step after 30 seconds, so a sync extraction waits up to 20 seconds and **Wait for Completion** up to 25; a job still running then comes back with its ID and status. For long operations, prefer a background job and completion trigger to keeping an action open. Read the [full guide](docs/guide.md) for waiting, retries, error mapping and webhook behavior.
 
 ## Develop locally
 

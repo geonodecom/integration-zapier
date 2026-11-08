@@ -1,10 +1,10 @@
 'use strict';
 
-const { baseUrl } = require('./lib/client');
+const { baseUrl, DEFAULT_BASE_URL } = require('./lib/client');
 
 // Custom (session-less) auth: the user supplies the deployment base URL and an
 // API key. The key is sent as the X-Api-Key header on every request via the
-// beforeRequest middleware in index.js.
+// beforeRequest middleware in index.js, which refuses non-geonode.io hosts.
 module.exports = {
   type: 'custom',
 
@@ -14,8 +14,9 @@ module.exports = {
       label: 'Base URL',
       type: 'string',
       required: true,
-      default: 'https://scraper.geonode.io',
-      helpText: 'Root URL of your Scraper API deployment, with no trailing slash.',
+      default: DEFAULT_BASE_URL,
+      helpText:
+        'Keep `https://scraper.geonode.io` unless Geonode support gives you another address. Only https addresses on geonode.io work. See the [API docs](https://docs.geonode.com/docs/scraper-api).',
     },
     {
       key: 'apiKey',
@@ -23,7 +24,7 @@ module.exports = {
       type: 'string',
       required: true,
       helpText:
-        'Sent as the X-Api-Key header. Required when the deployment has billing enabled (the default).',
+        'Sign in to the [Geonode dashboard](https://app.geonode.com/), open **API Keys**, and create a key or copy an existing one.',
     },
   ],
 
@@ -37,9 +38,9 @@ module.exports = {
 
   connectionLabel: (z, bundle) => {
     try {
-      return new URL(bundle.authData.baseUrl).host;
+      return new URL(baseUrl(bundle)).host;
     } catch (e) {
-      return 'Scraper API';
+      return 'Geonode';
     }
   },
 };

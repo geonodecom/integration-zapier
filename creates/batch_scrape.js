@@ -1,18 +1,19 @@
 'use strict';
 
-const { request, pruneEmpty, pollUntilComplete } = require('../lib/client');
+const { request, pruneEmpty, pollUntilComplete, deadlineFromNow } = require('../lib/client');
 const {
   outputFormatField,
   renderJsField,
   proxyFields,
   waitFields,
-  pollFields,
+  waitForCompletionField,
   buildProxy,
   buildWaitConfig,
 } = require('../lib/fields');
 const samples = require('../lib/samples');
 
 const perform = async (z, bundle) => {
+  const deadline = deadlineFromNow();
   const input = bundle.inputData;
 
   const body = pruneEmpty({
@@ -24,26 +25,23 @@ const perform = async (z, bundle) => {
     wait_config: buildWaitConfig(input),
   });
 
-  const response = await request(z, bundle, { method: 'POST', path: '/v1/batch', body });
+  const response = await request(z, bundle, { method: 'POST', path: '/v1/batch', body, deadline });
 
-  // Batch is always async. Optionally poll the job until every URL is done.
+  // Batch is always async. Optionally wait a while for every URL to finish.
   if (!input.wait_for_completion) return response;
 
   const statusUrl = response.status_url || `/v1/batch/${response.job_id}`;
-  return pollUntilComplete(z, bundle, {
-    path: statusUrl,
-    intervalMs: input.poll_interval_ms || 5000,
-    timeoutMs: input.poll_timeout_ms || 600000,
-  });
+  const job = await pollUntilComplete(z, bundle, { path: statusUrl, deadline });
+  return { ...response, ...job };
 };
 
 module.exports = {
   key: 'batch_scrape',
   noun: 'Batch Job',
   display: {
-    label: 'Batch Scrape URLs',
+    label: 'Extract URLs in Batch',
     description:
-      'Submit many URLs in one batch extraction job. Returns a job handle; optionally wait for the whole batch to finish.',
+      'Starts one job that extracts many URLs and returns its job ID. It can also wait up to 25 seconds for the job to finish.',
   },
   operation: {
     inputFields: [
@@ -67,7 +65,7 @@ module.exports = {
       renderJsField,
       ...proxyFields,
       ...waitFields,
-      ...pollFields(false),
+      waitForCompletionField(false),
     ],
     perform,
     sample: samples.batchAccepted,

@@ -1,18 +1,25 @@
 'use strict';
 
-const { test, afterEach } = require('node:test');
+const { test, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert');
 const nock = require('nock');
 
 const zapier = require('zapier-platform-core');
 const App = require('../index');
+const { timing } = require('../lib/client');
 
 const appTester = zapier.createAppTester(App);
 
-const BASE = 'https://scraper.example.com';
+const BASE = 'https://scraper.geonode.io';
 const authData = { baseUrl: BASE, apiKey: 'test-key' };
+const defaultTiming = { ...timing };
+
+beforeEach(() => {
+  timing.pollIntervalMs = 1;
+});
 
 afterEach(() => {
+  Object.assign(timing, defaultTiming);
   nock.cleanAll();
 });
 
@@ -77,10 +84,12 @@ test('crawl_site with wait polls until completion', async () => {
 
   const result = await appTester(App.creates.crawl_site.operation.perform, {
     authData,
-    inputData: { url: 'https://example.com', wait_for_completion: true, poll_interval_ms: 1 },
+    inputData: { url: 'https://example.com', wait_for_completion: true },
   });
   assert.strictEqual(result.status, 'completed');
   assert.strictEqual(result.total_pages, 3);
+  // Keys from the start response stay, so the output matches the sample.
+  assert.strictEqual(result.status_url, '/v1/crawl/job-2');
   scope.done();
 });
 
@@ -149,7 +158,11 @@ test('job_completed performList backfills recent completed jobs', async () => {
   const scope = nock(BASE)
     .get('/v1/extract/jobs')
     .query({ status: 'completed', page: 1, page_size: 3 })
-    .reply(200, { jobs: [{ job_id: 'a' }, { job_id: 'b' }], page: 1, page_size: 3, page_count: 1 });
+    .reply(200, { jobs: [{ job_id: 'a' }, { job_id: 'b' }], page: 1, page_size: 3, page_count: 1 })
+    .get('/v1/extract/a')
+    .reply(200, { job_id: 'a', status: 'completed' })
+    .get('/v1/extract/b')
+    .reply(200, { job_id: 'b', status: 'completed' });
 
   const result = await appTester(App.triggers.job_completed.operation.performList, {
     authData,
@@ -157,5 +170,6 @@ test('job_completed performList backfills recent completed jobs', async () => {
   });
   assert.strictEqual(result.length, 2);
   assert.strictEqual(result[0].event_type, 'extract_completed');
+  assert.strictEqual(result[0].id, 'a');
   scope.done();
 });

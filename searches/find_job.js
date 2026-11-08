@@ -3,6 +3,9 @@
 const { request } = require('../lib/client');
 const samples = require('../lib/samples');
 
+// The API returns at most this many batch or crawl results per page.
+const MAX_PAGE_SIZE = 50;
+
 // One job-status endpoint per job type. Batch and crawl details are paginated.
 const JOB_TYPES = {
   extract: { path: (id) => `/v1/extract/${id}`, paginated: false },
@@ -20,7 +23,7 @@ const perform = async (z, bundle) => {
   }
 
   const params = spec.paginated
-    ? { page: input.page || 1, page_size: input.page_size || 100 }
+    ? { page: input.page || 1, page_size: Math.min(Number(input.page_size) || 10, MAX_PAGE_SIZE) }
     : undefined;
 
   try {
@@ -71,8 +74,8 @@ module.exports = {
         label: 'Results Page Size',
         type: 'integer',
         required: false,
-        default: '100',
-        helpText: 'For batch/crawl jobs: how many results per page (max 100).',
+        default: '10',
+        helpText: 'For batch/crawl jobs: how many results per page (max 50).',
       },
     ],
     perform,
