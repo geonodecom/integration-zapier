@@ -4,7 +4,7 @@ All notable changes to the Zapier integration will be documented in this file. E
 
 The format is inspired by Keep a Changelog.
 
-## [Unreleased]
+## [1.1.0] - 2026-11-08
 
 - **Job Completed** unwraps the API's webhook envelope (`{event, webhook_id, delivery_id, timestamp, data}`). Every result now has `id` (the job ID), `event_type`, `job_id`, `status` and `status_url`; extract events add the job result, batch and crawl events add `counts`. Test data from recent jobs has the same shape, and output fields follow the chosen event. Before, Zaps got the envelope as is, and test data had another shape.
 
