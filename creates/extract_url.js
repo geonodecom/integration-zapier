@@ -70,13 +70,13 @@ module.exports = {
       renderJsField,
       {
         key: 'processing_mode',
-        label: 'Processing Mode',
+        label: 'Processing mode',
         type: 'string',
         required: false,
         default: 'sync',
         choices: { sync: 'Sync (wait for result)', async: 'Async (start a job)' },
         helpText:
-          'Sync waits up to 20 seconds for the page; a slower page fails and is not charged. Async returns a job ID at once: use it for slow pages, with **Wait for Completion** or the **Job Completed** trigger.',
+          'Sync waits up to 20 seconds for the page; a slower page fails and is not charged. Async returns a job ID at once: use it for slow pages, with **Wait for completion** or the **Job Completed** trigger.',
       },
       ...proxyFields,
       ...waitFields,

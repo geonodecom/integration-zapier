@@ -21,7 +21,7 @@ module.exports = {
   noun: 'Map',
   display: {
     label: 'Map URLs',
-    description: 'Discover all URLs under a base URL using sitemaps and lightweight crawling.',
+    description: 'Discovers the URLs under a base URL from its sitemaps and light crawling.',
   },
   operation: {
     inputFields: [
@@ -35,14 +35,14 @@ module.exports = {
       },
       {
         key: 'search',
-        label: 'Search Filter',
+        label: 'Search filter',
         type: 'string',
         required: false,
         helpText: 'Case-insensitive substring filter applied to discovered URLs.',
       },
       {
         key: 'include_subdomains',
-        label: 'Include Subdomains',
+        label: 'Include subdomains',
         type: 'boolean',
         required: false,
         default: 'true',
@@ -50,7 +50,7 @@ module.exports = {
       },
       {
         key: 'ignore_query_parameters',
-        label: 'Ignore Query Parameters',
+        label: 'Ignore query parameters',
         type: 'boolean',
         required: false,
         default: 'true',

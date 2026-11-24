@@ -66,7 +66,7 @@ module.exports = {
       },
       {
         key: 'limit',
-        label: 'Page Limit',
+        label: 'Page limit',
         type: 'integer',
         required: false,
         default: '50',
@@ -76,7 +76,7 @@ module.exports = {
       renderJsField,
       {
         key: 'same_domain_only',
-        label: 'Same Domain Only',
+        label: 'Same domain only',
         type: 'boolean',
         required: false,
         default: 'true',
@@ -84,11 +84,11 @@ module.exports = {
       },
       {
         key: 'include_subdomains',
-        label: 'Include Subdomains',
+        label: 'Include subdomains',
         type: 'boolean',
         required: false,
         default: 'false',
-        helpText: 'When Same Domain Only is on, also follow subdomains.',
+        helpText: 'When **Same domain only** is on, also follow subdomains.',
       },
       ...proxyFields,
       ...waitFields,

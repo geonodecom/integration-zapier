@@ -4,6 +4,22 @@ All notable changes to the Zapier integration will be documented in this file. E
 
 The format is inspired by Keep a Changelog.
 
+## [Unreleased]
+
+- Error messages start with `Geonode API error (<status>)` instead of `Scraper API error`, following Zapier's publishing requirement 1.7. A refused API key (401) says: "Your Geonode API key was not accepted. Copy a current key from the Geonode dashboard and reconnect." A 403 keeps the API's message, because it can also mean a blocked site or a restricted plan.
+
+- The connection has no custom label. It showed the API host, which names no account; Zapier now shows its default name.
+
+- The **Base URL** help says to leave the default unless Geonode support asks to change it. The field and its https geonode.io check are unchanged, so existing connections keep working.
+
+- Input and output field labels use sentence case, as Zapier's build guidelines ask, such as **Wait for completion** and **Tokens charged**. Field keys are unchanged, so mapped fields keep working.
+
+- **Map URLs** and **Find Job by ID** descriptions start with "Discovers" and "Finds".
+
+- Samples hold only keys that live results have. The **Map URLs** sample drops `warning`, which the API leaves out when empty. The **Find Job by ID** sample keeps the keys every job type has (`job_id`, `status`, `created_at`, `completed_at`); its other output fields follow the chosen **Job type**.
+
+- README, guide and `package.json` describe Geonode with the approved listing copy and no "scraping" wording. The sign-up link is `https://app.geonode.com/signup`. The guide links this folder to app 243288 with `zapier-platform link` instead of registering a duplicate app.
+
 ## [1.1.0] - 2026-11-08
 
 - **Job Completed** unwraps the API's webhook envelope (`{event, webhook_id, delivery_id, timestamp, data}`). Every result now has `id` (the job ID), `event_type`, `job_id`, `status` and `status_url`; extract events add the job result, batch and crawl events add `counts`. Test data from recent jobs has the same shape, and output fields follow the chosen event. Before, Zaps got the envelope as is, and test data had another shape.

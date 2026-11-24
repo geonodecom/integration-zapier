@@ -47,7 +47,7 @@ const asWebhookData = (jobType, job) => {
   };
 };
 
-// Registers a webhook in the Scraper API pointing at the Zap's REST hook URL.
+// Registers a webhook in the Geonode API pointing at the Zap's REST hook URL.
 // The API responds with the webhook id (used to unsubscribe) and a signing
 // secret; both are persisted in bundle.subscribeData.
 const subscribeHook = async (z, bundle) => {
@@ -67,7 +67,7 @@ const unsubscribeHook = async (z, bundle) => {
   return {};
 };
 
-// Fired for each inbound webhook delivery. The Scraper API POSTs an envelope,
+// Fired for each inbound webhook delivery. The Geonode API POSTs an envelope,
 // {event, webhook_id, delivery_id, timestamp, data}, with the job in `data`.
 const perform = (z, bundle) => {
   const payload = bundle.cleanedRequest && bundle.cleanedRequest.body ? bundle.cleanedRequest.body : bundle.cleanedRequest;
@@ -118,14 +118,14 @@ module.exports = {
     inputFields: [
       {
         key: 'event_type',
-        label: 'Event Type',
+        label: 'Event type',
         type: 'string',
         required: true,
         default: 'extract_completed',
         choices: {
-          extract_completed: 'Extract Completed',
-          batch_completed: 'Batch Completed',
-          crawl_completed: 'Crawl Completed',
+          extract_completed: 'Extract completed',
+          batch_completed: 'Batch completed',
+          crawl_completed: 'Crawl completed',
         },
         helpText: 'Which job-completion event should start this Zap.',
       },

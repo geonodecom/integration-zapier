@@ -55,7 +55,7 @@ module.exports = {
       },
       {
         key: 'ignore_invalid_urls',
-        label: 'Ignore Invalid URLs',
+        label: 'Ignore invalid URLs',
         type: 'boolean',
         required: false,
         default: 'true',

@@ -1,15 +1,14 @@
-# Scraper API: Zapier Integration
+# Geonode for Zapier: full guide
 
 [Integrations page](https://geonode.com/integrations/integration-zapier) · [Geonode API docs](https://docs.geonode.com/docs/scraper-api) · [GitHub source](https://github.com/geonodecom/integration-zapier) · [Repository overview](../README.md)
 
 A native [Zapier Platform CLI](https://docs.zapier.com/platform/reference/cli-docs)
-app (Node.js) that exposes the [Geonode Scraper API](https://geonode.com/products/scraper-api)
+app (Node.js) that brings the [Geonode API](https://geonode.com/products/scraper-api)
 to no-code users. It mirrors the capabilities of the n8n and Make.com integrations
 in the Geonode integration collection.
 
-> **Distribution:** This app is built for **private / invite-only** use. You push
-> it to your own Zapier account and share an invite link — the lengthy public
-> Zapier app-review process is intentionally **out of scope**.
+> **Distribution:** The app is **private / invite-only** for now. Until it is
+> listed publicly, Geonode shares it by invite link.
 
 ## Capabilities
 
@@ -26,7 +25,7 @@ in the Geonode integration collection.
 
 | Search | Endpoint | What it does |
 | --- | --- | --- |
-| **Find Job by ID** | `GET /v1/{extract\|batch\|crawl\|map}/{job_id}` | Look up any job by ID and return its current status/result. A missing job returns no results (not an error). |
+| **Find Job by ID** | `GET /v1/{extract\|batch\|crawl\|map}/{job_id}` | Find any job by ID and return its current status/result. A missing job returns no results (not an error). |
 
 ### Trigger
 
@@ -41,27 +40,35 @@ also carry `delivery_id`, `webhook_id` and `delivered_at`. Test data from recent
 jobs has the same shape, as Zapier requires.
 
 Every operation ships **sample data** and **output field** definitions so
-downstream Zap steps can map fields before any live run — meeting Zapier
-platform standards.
+downstream Zap steps can map fields before any live run, as Zapier requires.
+A sample holds only keys that every live result has. **Find Job by ID**
+answers in a different shape per job type, so its sample has the keys all
+types share, and its other output fields follow the chosen **Job type**.
 
 ## Authentication
 
 Custom auth with two fields:
 
-- **Base URL** — keep `https://scraper.geonode.io`. The app sends the key only
-  to https addresses on geonode.io and refuses any other host.
-- **API Key** — sent as the `X-Api-Key` header on every request.
+- **Base URL**: leave the default, `https://scraper.geonode.io`. The app sends
+  the key only to https addresses on geonode.io and refuses any other host.
+- **API key**: sent as the `X-Api-Key` header on every request.
 
 The connection test calls `GET /v1/statistics` (an authenticated endpoint) so a
 bad key is rejected at connect time. `/health` is unauthenticated and would pass
-even with a bad key, so it is deliberately not used.
+even with a bad key, so it is deliberately not used. A refused key (401) shows
+"Your Geonode API key was not accepted. Copy a current key from the Geonode
+dashboard and reconnect." Other errors show `Geonode API error (<status>)`
+and the API's own message.
+
+The app sets no connection label: `/v1/statistics` names no account, and
+Zapier wants the label to identify one, so Zapier's default name is shown.
 
 ## Project layout
 
 ```
 ./
   index.js                 App definition (auth, middleware, triggers, searches, creates)
-  authentication.js        Custom API-key + base-URL auth, connection test/label
+  authentication.js        Custom API-key + base-URL auth, connection test
   middleware.js            beforeRequest (X-Api-Key) + afterResponse (error mapping)
   lib/
     client.js              request() with retry/backoff, pruneEmpty, pollUntilComplete, time budget
@@ -87,7 +94,7 @@ even with a bad key, so it is deliberately not used.
 ```sh
 npm ci
 
-# Run the test suite (no network — HTTP is mocked with nock).
+# Run the test suite (no network: HTTP is mocked with nock).
 npm test
 ```
 
@@ -101,9 +108,9 @@ To exercise the live app locally, copy `.env.example` to `.env`, fill in
 
 ## Packaging reference (maintainers only)
 
-The existing Geonode app is **243288**. Do not register a duplicate app. Releases go through the `Publish` workflow; these commands are reference material.
-
-## Packaging for private / invite-only use
+The existing Geonode app is **243288**. Never run `zapier-platform register`:
+it creates a second, duplicate app. Releases go through the `Publish` workflow;
+these commands are reference material.
 
 1. Install the CLI and log in (one-time):
 
@@ -112,21 +119,21 @@ The existing Geonode app is **243288**. Do not register a duplicate app. Release
    zapier-platform login
    ```
 
-2. Register the app on your account (one-time — creates `.zapierapprc`, which is
-   gitignored):
+2. Link this folder to app 243288 (one-time; writes `.zapierapprc`, which is
+   gitignored). Pick the Geonode app with ID 243288 from the list:
 
    ```sh
-   zapier-platform register "Scraper API"
+   zapier-platform link
    ```
 
-3. Validate, then push a private version:
+3. Validate, then push a version:
 
    ```sh
    zapier-platform validate          # structural + style checks
    zapier-platform push              # build + upload this version
    ```
 
-4. Share it privately — no public review required:
+4. Share it privately while the app is invite-only:
 
    ```sh
    # Invite specific users by email...
@@ -138,7 +145,8 @@ The existing Geonode app is **243288**. Do not register a duplicate app. Release
 
 Invited users see the app in their Zap editor immediately. Promote a version
 with `zapier-platform promote <version>` when you want new invitees to land on it
-by default. Public listing (app submission) is **not** performed here by design.
+by default. The public listing is requested in Zapier's developer platform, not
+from this repository.
 
 ## Automated publishing
 
@@ -154,10 +162,10 @@ One-time setup in the GitHub repo (Settings → Secrets and variables → Action
 | Name | Kind | How to get it |
 | --- | --- | --- |
 | `ZAPIER_DEPLOY_KEY` | **Secret** | Run `zapier-platform login` locally, then copy the `deployKey` value from `~/.zapierrc`. The CLI reads this env var for non-interactive auth. |
-| `ZAPIER_APP_ID` | **Variable** | Run `zapier-platform register "Scraper API"` (or `zapier-platform link`) once locally; copy the numeric `id` from the generated `.zapierapprc`. CI recreates `.zapierapprc` from this value. |
+| `ZAPIER_APP_ID` | **Variable** | `243288`, the existing app (also the `id` in `.zapierapprc` after `zapier-platform link`). CI recreates `.zapierapprc` from this value. |
 
-Release flow: bump `version` in `package.json` (and note it in a changelog if you
-keep one), merge to `main` → the workflow pushes that version. To make it the
+Release flow: bump `version` in `package.json`, add a `CHANGELOG.md` entry, and
+merge to `main` → the workflow pushes that version. To make it the
 default for new invitees, run the workflow manually with **promote = true**, or
 run `zapier-platform promote <version>` locally. Move existing users with
 `zapier-platform migrate <old> <new>`.
@@ -170,7 +178,7 @@ run `zapier-platform promote <version>` locally. Move existing users with
 - **Retries:** `5xx` responses are retried with exponential backoff, honoring
   `Retry-After`, while the retry still fits in the step's time. A `429` reaches
   Zapier as a `ThrottledError`, and Zapier runs the step again later.
-- **Wait for Completion:** crawl/batch (and async extract) check the job every
+- **Wait for completion:** crawl/batch (and async extract) check the job every
   3 seconds for up to 25 seconds. A job still running then is returned with its
   current status and ID instead of an error.
 - **Proxy & wait config:** surfaced as flat fields and reassembled into the

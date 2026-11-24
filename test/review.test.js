@@ -199,7 +199,7 @@ test('a 503 is not retried when the retry would pass the time limit', async () =
 
   await assert.rejects(
     appTester(App.creates.map_urls.operation.perform, { authData, inputData: { url: 'https://example.com' } }),
-    /Scraper API error \(503\): Try again/,
+    /Geonode API error \(503\): Try again/,
   );
 });
 
@@ -276,7 +276,7 @@ test('validation errors show the field and the first message', async () => {
 
   await assert.rejects(
     appTester(App.creates.extract_url.operation.perform, { authData, inputData: { url: 'not-a-url' } }),
-    /Scraper API error \(422\): url: Value error, URL must contain a valid hostname\./,
+    /Geonode API error \(422\): url: Value error, URL must contain a valid hostname\./,
   );
 });
 
@@ -321,5 +321,56 @@ test('user-facing text does not say "scrape" (Zapier policy 1.7)', () => {
   collect([authentication.fields, triggers, searches, creates]);
   // Addresses such as scraper.geonode.io are names, not wording.
   const offending = texts.filter((text) => /scrap/i.test(text.replace(/https?:\/\/\S+/g, '')));
+  assert.deepStrictEqual(offending, []);
+});
+
+test('a refused key says to reconnect; a 403 keeps the API message', async () => {
+  nock(BASE)
+    .get('/v1/statistics')
+    .reply(401, { code: 'UNAUTHORIZED', message: 'Invalid API key' })
+    .post('/v1/extract')
+    .reply(403, { error: { code: 'TARGET_BLOCKED', message: 'Site refused' } });
+
+  await assert.rejects(
+    appTester(App.authentication.test, { authData }),
+    /Geonode API error \(401\): Your Geonode API key was not accepted\. Copy a current key from the Geonode dashboard and reconnect\./,
+  );
+  await assert.rejects(
+    appTester(App.creates.extract_url.operation.perform, { authData, inputData: { url: 'https://example.com' } }),
+    /Geonode API error \(403\): Site refused/,
+  );
+});
+
+test('samples hold only keys the live results have', () => {
+  // Shapes from the Geonode API: app/api/v1/{extract,batch,crawl,map}/schemas.py.
+  const job = { status: 'processing', created_at: 'x', completed_at: null };
+  const liveJobs = {
+    extract: { ...extractJob },
+    batch: { ...batchStatus },
+    crawl: { job_id: 'c-1', url: 'u', crawl_config: {}, token_summary: {}, total_pages: 0, results: null, ...job },
+    map: { job_id: 'm-1', url: 'u', links_count: 0, tokens_charged: 0, links: null, ...job },
+  };
+  for (const [type, live] of Object.entries(liveJobs)) assertSubset(samples.jobSummary, live, `find_job ${type}`);
+  assertSubset(samples.mapResult, { success: true, links: [], metadata: {} }, 'map_urls');
+  assertSubset(samples.extractSync, { data: extractJob.data, metadata: extractJob.metadata, tokens_charged: 1 }, 'extract_url');
+
+  const dynamic = App.searches.find_job.operation.outputFields.find((field) => typeof field === 'function');
+  const keys = (jobType) => dynamic(null, { inputData: { job_type: jobType } }).map((field) => field.key);
+  assert.ok(keys('batch').includes('total_urls'));
+  assert.ok(keys('map').includes('links_count'));
+  assert.ok(keys('extract').includes('data__markdown'));
+});
+
+test('input field labels use sentence case', () => {
+  const NAMES = ['URL', 'URLs', 'ID', 'API', 'JavaScript'];
+  const fields = [
+    ...App.authentication.fields,
+    ...[App.triggers, App.searches, App.creates].flatMap((group) =>
+      Object.values(group).flatMap((op) => op.operation.inputFields),
+    ),
+  ];
+  const offending = fields
+    .map((field) => field.label)
+    .filter((label) => label.split(' ').slice(1).some((word) => /^[A-Z]/.test(word) && !NAMES.includes(word)));
   assert.deepStrictEqual(offending, []);
 });
