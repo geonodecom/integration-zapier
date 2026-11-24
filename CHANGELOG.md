@@ -4,7 +4,7 @@ All notable changes to the Zapier integration will be documented in this file. E
 
 The format is inspired by Keep a Changelog.
 
-## [Unreleased]
+## [1.1.1] - 2026-11-24
 
 - Error messages start with `Geonode API error (<status>)` instead of `Scraper API error`, following Zapier's publishing requirement 1.7. A refused API key (401) says: "Your Geonode API key was not accepted. Copy a current key from the Geonode dashboard and reconnect." A 403 keeps the API's message, because it can also mean a blocked site or a restricted plan.
 
