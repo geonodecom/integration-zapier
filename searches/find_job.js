@@ -42,13 +42,13 @@ module.exports = {
   noun: 'Job',
   display: {
     label: 'Find Job by ID',
-    description: 'Look up an extract, batch, crawl, or map job by its ID and return its current status and result.',
+    description: 'Finds an extract, batch, crawl, or map job by its ID and returns its current status and result.',
   },
   operation: {
     inputFields: [
       {
         key: 'job_type',
-        label: 'Job Type',
+        label: 'Job type',
         type: 'string',
         required: true,
         default: 'extract',
@@ -63,7 +63,7 @@ module.exports = {
       },
       {
         key: 'page',
-        label: 'Results Page',
+        label: 'Results page',
         type: 'integer',
         required: false,
         default: '1',
@@ -71,7 +71,7 @@ module.exports = {
       },
       {
         key: 'page_size',
-        label: 'Results Page Size',
+        label: 'Results page size',
         type: 'integer',
         required: false,
         default: '10',
@@ -79,7 +79,10 @@ module.exports = {
       },
     ],
     perform,
-    sample: samples.extractJob,
-    outputFields: samples.extractJobFields,
+    sample: samples.jobSummary,
+    outputFields: [
+      ...samples.jobSummaryFields,
+      (z, bundle) => samples.jobFieldsByType[bundle.inputData.job_type] || samples.jobFieldsByType.extract,
+    ],
   },
 };

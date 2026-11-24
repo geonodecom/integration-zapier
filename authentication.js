@@ -16,11 +16,11 @@ module.exports = {
       required: true,
       default: DEFAULT_BASE_URL,
       helpText:
-        'Keep `https://scraper.geonode.io` unless Geonode support gives you another address. Only https addresses on geonode.io work. See the [API docs](https://docs.geonode.com/docs/scraper-api).',
+        'Leave the default unless Geonode support asks you to change it. Your key is sent only to https addresses on geonode.io.',
     },
     {
       key: 'apiKey',
-      label: 'API Key',
+      label: 'API key',
       type: 'string',
       required: true,
       helpText:
@@ -36,11 +36,6 @@ module.exports = {
     return response.data;
   },
 
-  connectionLabel: (z, bundle) => {
-    try {
-      return new URL(baseUrl(bundle)).host;
-    } catch (e) {
-      return 'Geonode';
-    }
-  },
+  // No connectionLabel: /v1/statistics names no account, and Zapier wants the
+  // label to identify one (check D003), so Zapier's default name is used.
 };

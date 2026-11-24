@@ -1,7 +1,7 @@
 {
   "name": "zapier-scraperapi",
-  "version": "1.1.0",
-  "description": "Use Geonode’s private Zapier web scraping app to extract pages, process URL lists and crawl websites, then pass results to your next Zap step.",
+  "version": "1.1.1",
+  "description": "Geonode is a web data platform that crawls websites and turns pages into clean Markdown or HTML for AI agents and automated workflows.",
   "private": true,
   "license": "MIT",
   "homepage": "https://geonode.com/integrations/integration-zapier",
@@ -16,10 +16,9 @@
   "keywords": [
     "zapier",
     "zapier-platform-app",
-    "scraper",
-    "scraping",
     "crawl",
     "extract",
+    "markdown",
     "geonode"
   ],
   "main": "index.js",

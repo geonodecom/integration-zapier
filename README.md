@@ -1,10 +1,10 @@
-![Geonode for Zapier: Web Scraping & Data Extraction](assets/banner.svg)
+![Geonode for Zapier](assets/banner.svg)
 
-# Geonode for Zapier: Web Scraping & Data Extraction
+# Geonode for Zapier
 
-Bring web content into Zapier with Geonode’s app. Extract pages, discover URLs, crawl sites and run batches, then continue your Zap when a job completes. Pass results to your AI or business-app steps for research, summaries and record updates.
+Geonode is a web data platform that crawls websites and turns pages into clean Markdown or HTML for AI agents and automated workflows. With the Zapier app you extract pages, discover URLs, crawl sites and run batches, then continue your Zap when a job completes. Pass results to your AI or business-app steps for research, summaries and record updates.
 
-**[Try Geonode for free](https://app.geonode.com/sign-up)**
+**[Try Geonode for free](https://app.geonode.com/signup)**
 
 [Integrations page](https://geonode.com/integrations/integration-zapier) · [Geonode API docs](https://docs.geonode.com/docs/scraper-api) · [View source on GitHub](https://github.com/geonodecom/integration-zapier) · [Complete guide](docs/guide.md)
 
@@ -24,7 +24,7 @@ Bring web content into Zapier with Geonode’s app. Extract pages, discover URLs
 
 1. [Contact Geonode](https://geonode.com/contact) for an invitation to the private Zapier app.
 2. Create an API key in the [Geonode dashboard](https://app.geonode.com/) under **API Keys**.
-3. Connect the app in Zapier with your API key and base URL `https://scraper.geonode.io`.
+3. Connect the app in Zapier with your API key. Leave **Base URL** at its default.
 4. Choose **Extract URL**, enter a page URL, and map the returned Markdown or HTML into your next step.
 
 The connection test uses authenticated usage statistics. Requests send your key as `X-Api-Key`.
@@ -35,7 +35,7 @@ Use a form or spreadsheet trigger that supplies a URL, then choose **Extract URL
 
 For a summary, send Markdown to a separate AI step and save its result with the source URL. For structured product or company fields, add a parsing step. Geonode retrieves the page content; these transformations and destination connections are configured separately.
 
-For longer batches or crawls, retain the job ID and use **Find Job by ID** or the **Job Completed** trigger. A queued job is not finished content. Test the complete Zap before enabling it; the workflow recipes here have not been live-tested in this review.
+For longer batches or crawls, retain the job ID and use **Find Job by ID** or the **Job Completed** trigger. A queued job is not finished content. Test the complete Zap before you turn it on.
 
 ## Actions, search and trigger
 
@@ -48,7 +48,7 @@ For longer batches or crawls, retain the job ID and use **Find Job by ID** or th
 | Find Job by ID | Retrieve an extraction, batch, crawl or map job's status/result. |
 | Job Completed | Receive a REST-hook event when extraction, batch or crawl work completes. |
 
-Sample data and output-field definitions help you map downstream steps before a live run. Zapier stops a step after 30 seconds, so a sync extraction waits up to 20 seconds and **Wait for Completion** up to 25; a job still running then comes back with its ID and status. For long operations, prefer a background job and completion trigger to keeping an action open. Read the [full guide](docs/guide.md) for waiting, retries, error mapping and webhook behavior.
+Sample data and output-field definitions help you map downstream steps before a live run. Zapier stops a step after 30 seconds, so a sync extraction waits up to 20 seconds and **Wait for completion** up to 25; a job still running then comes back with its ID and status. For long operations, prefer a background job and completion trigger to keeping an action open. Read the [full guide](docs/guide.md) for waiting, retries, error mapping and webhook behavior.
 
 ## Develop locally
 
@@ -79,4 +79,4 @@ The app ID and the action, search and trigger identifiers are kept stable. Bumpi
 
 MIT licensed. See [LICENSE](LICENSE).
 
-**[Try Geonode for free](https://app.geonode.com/sign-up)**
+**[Try Geonode for free](https://app.geonode.com/signup)**

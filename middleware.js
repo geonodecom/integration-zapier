@@ -1,7 +1,7 @@
 'use strict';
 
 const { version } = require('./package.json');
-const { errorMessage } = require('./lib/client');
+const { apiError } = require('./lib/client');
 
 // The key may only go to Geonode over https, whatever Base URL was entered.
 const isGeonodeUrl = (url) => {
@@ -44,11 +44,7 @@ const handleErrors = (response, z) => {
     return response;
   }
   if (response.status >= 400) {
-    throw new z.errors.Error(
-      `Scraper API error (${response.status}): ${errorMessage(response)}`,
-      'ScraperApiError',
-      response.status,
-    );
+    throw apiError(z, response);
   }
   return response;
 };
