@@ -27,7 +27,9 @@ const perform = async (z, bundle) => {
     : undefined;
 
   try {
-    const data = await request(z, bundle, { method: 'GET', path: spec.path(input.job_id), params });
+    // The ID goes into the path: encode it so "../webhooks" can't reach another route.
+    const path = spec.path(encodeURIComponent(input.job_id));
+    const data = await request(z, bundle, { method: 'GET', path, params });
     // Searches must return an array of matches.
     return [data];
   } catch (err) {

@@ -124,6 +124,17 @@ test('find_job returns an array and treats 404 as no results', async () => {
   assert.deepStrictEqual(none, []);
 });
 
+test('find_job encodes the job ID, so it stays inside the job path', async () => {
+  // Without encoding, "../webhooks" would resolve to /v1/webhooks. nock fails on any other path.
+  const scope = nock(BASE).get('/v1/extract/..%2Fwebhooks').reply(404, { detail: 'Not found' });
+  const none = await appTester(App.searches.find_job.operation.perform, {
+    authData,
+    inputData: { job_type: 'extract', job_id: '../webhooks' },
+  });
+  assert.deepStrictEqual(none, []);
+  scope.done();
+});
+
 test('job_completed subscribe/unsubscribe register and remove the webhook', async () => {
   const subScope = nock(BASE)
     .post('/v1/webhooks', (body) => body.event_type === 'crawl_completed' && body.url === 'https://hooks.zapier.com/x')
